@@ -74,7 +74,7 @@
             </r:Ribbon.Resources>
             <r:Ribbon.ApplicationMenu>
                 <r:RibbonApplicationMenu SmallImageSource="/File Manager;component/images/IronCross_small.png">
-                    <r:RibbonApplicationMenuItem Header="Open" Command="{DynamicResource OpenCommand}" ImageSource="/File Name Manager;component/images/FileOpen.png" ToolTipTitle="Open" ToolTipDescription="{DynamicResource OpenTip}">
+                    <r:RibbonApplicationMenuItem Header="Open" Command="{DynamicResource OpenCommand}" ImageSource="/File Manager;component/images/FileOpen.png" ToolTipTitle="Open" ToolTipDescription="{DynamicResource OpenTip}">
                     </r:RibbonApplicationMenuItem>
                     <r:RibbonApplicationMenu.FooterPaneContent>
                         <Grid>
@@ -105,17 +105,30 @@
             </Grid>
         </Border>
         <Border Grid.Row="2" Grid.Column="0" Margin="3" BorderBrush="SteelBlue" BorderThickness="1">
-            <ListView Name="FileListView" >
+            <ListView Name="FileListView" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="FileListView_SelectionChanged" MouseRightButtonUp="FileListView_MouseRightButtonUp">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel></WrapPanel>
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
+                <!--<ListView.Resources>
+                    <DataTemplate x:Key="DateDt">
+                        <TextBlock x:Name="textboxDate" Text="{Binding DateTime}" ></TextBlock>
+                    </DataTemplate>
+                </ListView.Resources>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="File" ></GridViewColumn>
+                        <GridViewColumn Header="Last Modify Date" CellTemplate="{StaticResource DateDt}"></GridViewColumn>
+                        <GridViewColumn Header="Type" ></GridViewColumn>
+                        <GridViewColumn Header="Size" ></GridViewColumn>
+                    </GridView>
+                </ListView.View>-->
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel>
-                            <Image Source="{Binding Path=FullPath}"
-                   Margin="3,8" Height="35">
+                        <StackPanel Margin="3">
+                            <Image Source="{Binding Path=Icon}"
+                   Margin="5,10" Height="38" Width="40">
                                 <Image.ToolTip>
                                     <StackPanel>
                                         <TextBlock Text="{Binding Path=Name}"/>
@@ -123,20 +136,43 @@
                                     </StackPanel>
                                 </Image.ToolTip>
                             </Image>
-                            <TextBlock Text="{Binding Name, RelativeSource={RelativeSource Self}}"></TextBlock>
+                            <TextBlock HorizontalAlignment="Center" Text="{Binding Path=DisplayName}" Width="60" VerticalAlignment="Center" TextAlignment="Center" >
+                            </TextBlock>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
         </Border>
         <Border Grid.Column="2" Grid.Row="2" Margin="3" BorderBrush="SteelBlue" BorderThickness="1">
-            <Grid Background="{Binding ElementName=MainRibbon, Path=Background}" MinWidth="200" >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="150*"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="200*"/>
-                </Grid.RowDefinitions>
-            </Grid>
+            <GroupBox Header="File Properities">
+                <Grid Background="{Binding ElementName=MainRibbon, Path=Background}" MinWidth="200" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" MinHeight="30"/>
+                        <RowDefinition Height="Auto" MinHeight="30"/>
+                        <RowDefinition Height="Auto" MinHeight="30"/>
+                        <RowDefinition Height="Auto" MinHeight="30"/>
+                        <RowDefinition Height="Auto" MinHeight="30"/>
+                        <RowDefinition Height="Auto" MinHeight="30"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="110"></ColumnDefinition>
+                        <ColumnDefinition ></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="0" Grid.Column="0" TextAlignment="Right">File Name:</TextBlock>
+                    <TextBox x:Name="NameLabel" Margin="3" Grid.Row="0" Grid.Column="1" TextAlignment="Left" IsReadOnly="True" ></TextBox>
+                    <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="1" Grid.Column="0" TextAlignment="Right">File Type:</TextBlock>
+                    <TextBox x:Name="TypeLabel" Margin="3" Grid.Row="1" Grid.Column="1" TextAlignment="Left" IsReadOnly="True"></TextBox>
+                    <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="2" Grid.Column="0" TextAlignment="Right">Full Path:</TextBlock>
+                    <TextBox x:Name="FullPathLabel" Margin="3" Grid.Row="2" Grid.Column="1" TextAlignment="Left" IsReadOnly="True"></TextBox>
+                    <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="3" Grid.Column="0" TextAlignment="Right">Create Time:</TextBlock>
+                    <TextBox x:Name="CreateTimeLabel" Margin="3" Grid.Row="3" Grid.Column="1" TextAlignment="Left" IsReadOnly="True"></TextBox>
+                    <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="4" Grid.Column="0" TextAlignment="Right">Last Write Time:</TextBlock>
+                    <TextBox x:Name="LastWriteTimeLabel" Margin="3" Grid.Row="4" Grid.Column="1" TextAlignment="Left" IsReadOnly="True"></TextBox>
+                    <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="5" Grid.Column="0" TextAlignment="Right">Last Access Time:</TextBlock>
+                    <TextBox x:Name="LastAccessTimeLabel" Margin="3" Grid.Row="5" Grid.Column="1" TextAlignment="Left" IsReadOnly="True"></TextBox>
+                </Grid>
+            </GroupBox>
         </Border>
         <GridSplitter HorizontalAlignment="Center" Grid.Column="1" Grid.Row="2" Width="3"></GridSplitter>
         <StatusBar Name="MainStatus" Grid.Row="3" Grid.ColumnSpan="3">

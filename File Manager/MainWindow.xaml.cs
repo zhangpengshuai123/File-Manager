@@ -3,7 +3,9 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-
+using System.Windows.Threading;
+using System.Collections.Generic;
+using File_Manager.Model;
 
 namespace File_Manager
 {
@@ -12,6 +14,9 @@ namespace File_Manager
     /// </summary>
     public partial class MainWindow
     {
+        DispatcherTimer StatusUpadteTimer;
+        List<SysFileIf> CurrentFiles;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -20,7 +25,7 @@ namespace File_Manager
         private void FrmMain_Loaded(object sender, RoutedEventArgs e)
         {
             InitCustomerData();
-            
+            StatusUpdateTimer_Init();
         }
 
         public void InitCustomerData()
@@ -29,8 +34,35 @@ namespace File_Manager
             //根据当前用户PC具体环境，选择桌面作为初始目录
             DesktopFolder = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
             MainLayout.Resources["CurrentPath"] = DesktopFolder;
+            CurrentFiles = new List<SysFileIf>();
             UpdateFileList(DesktopFolder);
         }
+
+        #region StatusTimer
+        private void StatusUpdateTimer_Init()
+        {
+            StatusUpadteTimer = new DispatcherTimer();
+            StatusUpadteTimer.Interval = new TimeSpan(0, 0, 3);
+            StatusUpadteTimer.Tick += new EventHandler(StatusUpdateTimer_Tick);
+            StatusUpadteTimer.IsEnabled = false;
+        }
+
+        private void StatusUpdateTimer_Tick(object sender, EventArgs e)
+        {
+            StatusLabel.Content = "Ready";
+            StatusUpadteTimer.IsEnabled = false;
+        }
+
+        public void ShowStatus(string sStatus, bool isLongTime = false)
+        {
+            StatusLabel.Content = sStatus;
+            if (isLongTime == true)
+            {
+                return;
+            }
+            StatusUpadteTimer.Start();
+        }
+        #endregion
 
         private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
@@ -62,53 +94,23 @@ namespace File_Manager
                 DirectoryInfo currentDir = new DirectoryInfo(strPath);
                 DirectoryInfo[] dirs = currentDir.GetDirectories(); //获取目录
                 FileInfo[] files = currentDir.GetFiles();   //获取文件
-                //删除ImageList中的程序图标
-                //foreach (ListViewItem item in listView1.Items)
-                //{
-                //    if (item.Text.EndsWith(".exe"))  //是程序
-                //    {
-                //        imageList2.Images.RemoveByKey(item.Text);
-                //        imageList3.Images.RemoveByKey(item.Text);
-                //    }
-                //}
-                //listView1.Items.Clear();
+                
+                FileListView.Items.Clear();
+                CurrentFiles.Clear();
                 //列出文件夹
                 foreach (DirectoryInfo dir in dirs)
                 {
-                    //ListViewItem newDirItem = new ListViewItem();
-                    //newDirItem.Content = new File();
-                    //FileListView.Items.Add((ListViewItem));
-                    //ListBoxItem item = pictureBox.ItemContainerGenerator.ContainerFromItem(pictureBox.SelectedItem) as ListBoxItem;
+                    SysDirectory newDirItem = new SysDirectory(dir);
+                    CurrentFiles.Add(newDirItem);
+                    FileListView.Items.Add(newDirItem);
                 }
-                ////列出文件
-                //foreach (FileInfo file in files)
-                //{
-                //    ListViewItem fileItem = listView1.Items.Add(file.Name);
-                //    if (file.Extension == ".exe" || file.Extension == "")   //程序文件或无扩展名
-                //    {
-                //        Icon fileIcon = GetSystemIcon.GetIconByFileName(file.FullName);
-                //        imageList2.Images.Add(file.Name, fileIcon);
-                //        imageList3.Images.Add(file.Name, fileIcon);
-                //        fileItem.ImageKey = file.Name;
-                //    }
-                //    else    //其它文件
-                //    {
-                //        if (!imageList2.Images.ContainsKey(file.Extension))  //ImageList中不存在此类图标
-                //        {
-                //            Icon fileIcon = GetSystemIcon.GetIconByFileName(file.FullName);
-                //            imageList2.Images.Add(file.Extension, fileIcon);
-                //            imageList3.Images.Add(file.Extension, fileIcon);
-                //        }
-                //        fileItem.ImageKey = file.Extension;
-                //    }
-                //    fileItem.Name = file.FullName;
-                //    fileItem.SubItems.Add(file.Length.ToString() + "字节");
-                //    fileItem.SubItems.Add(file.Extension);
-                //    fileItem.SubItems.Add(file.LastWriteTimeUtc.ToString());
-                //}
-                //currentPath = newPath;
-                //toolStripComboBox1.Text = currentPath;   //更新地址栏
-                //toolStripStatusLabel1.Text = listView1.Items.Count + "个对象";     //更新状态栏
+                //列出文件
+                foreach (FileInfo file in files)
+                {
+                    SysFile newFileItem = new SysFile(file);
+                    CurrentFiles.Add(newFileItem);
+                    FileListView.Items.Add(newFileItem);
+                }
             }
             catch (Exception ex)
             {
@@ -118,7 +120,39 @@ namespace File_Manager
 
         private void ExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-
+            this.Close();
         }
+
+        private void FileListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (FileListView.SelectedItems.Count < 1)
+            {
+                ShowStatus("Ready");
+                return;
+            }
+            ShowStatus(FileListView.SelectedItems.Count.ToString() + " Items been Selected", true);
+            if (FileListView.SelectedItems.Count > 1)
+            {
+                return;
+            }
+            UpdateFileInfo((SysFileIf)FileListView.SelectedItem);
+            return;
+        }
+
+        private void FileListView_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            FileListView.SelectedItems.Clear();
+        }
+
+        private void UpdateFileInfo(SysFileIf file)
+        {
+            NameLabel.Text = file.Name;
+            TypeLabel.Text = file.Type;
+            FullPathLabel.Text = file.FullPath;
+            CreateTimeLabel.Text = file.CreateDateTime;
+            LastWriteTimeLabel.Text = file.WriteDateTime;
+            LastAccessTimeLabel.Text = file.AccessDateTime;
+        }
+
     }
 }
