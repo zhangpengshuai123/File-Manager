@@ -5,5 +5,11 @@
     <sys:String x:Key="OptionTip">Edit the configuration.</sys:String>
     <sys:String x:Key="ExitTip">Exit this program.</sys:String>
     <sys:String x:Key="ExecuteTip">Execute the command line in the graph database. The result will return in the text box below.</sys:String>
-    
+
+    <sys:String x:Key="MoveUpTip">Move the selected item to a higher priority.</sys:String>
+    <sys:String x:Key="MoveDownTip">Move the selected item to a lower priority.</sys:String>
+    <sys:String x:Key="SortFileTip">Sort all files without folders.</sys:String>
+    <sys:String x:Key="SortFolderTip">Sort all folders.</sys:String>
+    <sys:String x:Key="SortAllTip">Sort files and folders.</sys:String>
+
 </ResourceDictionary>

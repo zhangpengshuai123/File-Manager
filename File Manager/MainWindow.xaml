@@ -89,6 +89,27 @@
                     </r:RibbonApplicationMenu.FooterPaneContent>
                 </r:RibbonApplicationMenu>
             </r:Ribbon.ApplicationMenu>
+            <r:RibbonTab Name = "ribHomeTab" Header="Home" >
+                <r:RibbonGroup Header="Sort" GroupSizeDefinitions="{StaticResource RibbonLayout}">
+                    <ListBox Name="AddNodeProperties" Height="64" MinWidth="60">
+                        <CheckBox Content="Name"/>
+                        <CheckBox Content="Type"/>
+                        <CheckBox Content="CreateTime"/>
+                        <CheckBox Content="WriteTime"/>
+                    </ListBox>
+                    <r:RibbonButton Label="Move Up" Command="{StaticResource MoveUpCommand}" LargeImageSource="/File Manager;component/images/MoveUp.png" SmallImageSource="/File Manager;component/images/MoveUp_16x16.png" ToolTipTitle="Move Up" ToolTipDescription="{StaticResource MoveUpTip}"></r:RibbonButton>
+                    <r:RibbonButton Label="Move Down" Command="{StaticResource MoveDownCommand}" LargeImageSource="/File Manager;component/images/MoveDown.png" SmallImageSource="/File Manager;component/images/MoveUp_16x16.png" ToolTipTitle="Move Down" ToolTipDescription="{StaticResource MoveDownTip}"></r:RibbonButton>
+                    <r:RibbonSplitButton Label="Sort File" Command="{StaticResource SortFileCommand}" LargeImageSource="/File Manager;component/images/ExeSort.png" SmallImageSource="/File Manager;component/images/ExeSort_16x16.png" ToolTipTitle="Sort File" ToolTipDescription="{StaticResource SortFileTip}">
+                        <r:RibbonSplitButton.Items>
+                            <r:RibbonButton Label="Sort Folder" Command="{StaticResource SortFolderCommand}" LargeImageSource="/File Manager;component/images/ExeSort.png" SmallImageSource="/File Manager;component/images/ExeSort_16x16.png" ToolTipTitle="Sort Folder" ToolTipDescription="{StaticResource SortFolderTip}"></r:RibbonButton>
+                            <r:RibbonButton Label="Sort All" Command="{StaticResource SortAllCommand}" LargeImageSource="/File Manager;component/images/ExeSort.png" SmallImageSource="/File Manager;component/images/ExeSort_16x16.png" ToolTipTitle="Sort All" ToolTipDescription="{StaticResource SortAllTip}"></r:RibbonButton>
+                        </r:RibbonSplitButton.Items>
+                    </r:RibbonSplitButton>
+                </r:RibbonGroup>
+                <r:RibbonGroup Header="Rename" GroupSizeDefinitions="{StaticResource RibbonLayout}">
+                    
+                </r:RibbonGroup>
+            </r:RibbonTab>
         </r:Ribbon>
         <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="3" BorderBrush="SteelBlue" BorderThickness="1" Background="{Binding ElementName=MainRibbon, Path=Background}">
             <Grid >

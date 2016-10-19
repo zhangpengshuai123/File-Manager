@@ -137,6 +137,16 @@
     <Resource Include="images\FileText.ico" />
     <Resource Include="images\FileVedio.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\MoveDown.png" />
+    <Resource Include="images\MoveDown_16x16.png" />
+    <Resource Include="images\MoveUp.png" />
+    <Resource Include="images\MoveUp_16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\ExeSort.png" />
+    <Resource Include="images\ExeSort_16x16.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

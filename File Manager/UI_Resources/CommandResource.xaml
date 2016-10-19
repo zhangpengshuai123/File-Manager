@@ -7,4 +7,9 @@
     <RoutedUICommand x:Key="ClearComCommand" Text="ClearCommand" />
     <RoutedUICommand x:Key="ClearResultCommand" Text="ClearResult" />
 
+    <RoutedUICommand x:Key="MoveUpCommand" Text="MoveUp" />
+    <RoutedUICommand x:Key="MoveDownCommand" Text="MoveDown" />
+    <RoutedUICommand x:Key="SortFileCommand" Text="SortFile" />
+    <RoutedUICommand x:Key="SortFolderCommand" Text="SortFolder" />
+    <RoutedUICommand x:Key="SortAllCommand" Text="SortAll" />
 </ResourceDictionary>
