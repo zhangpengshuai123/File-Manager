@@ -43,6 +43,14 @@ namespace File_Manager.Model
             }
         }
 
+        public long SizeValue
+        {
+            get
+            {
+                return lngSize;
+            }
+        }
+
         public string Path
         {
             get { return strPath; }
@@ -77,19 +85,34 @@ namespace File_Manager.Model
             }
         }
 
-        public string CreateDateTime
+        public string CreateTime
         {
             get { return dateCreateTime.ToShortDateString() + " " + dateCreateTime.ToLongTimeString(); }
         }
 
-        public string WriteDateTime
+        public DateTime CreateDateTime
+        {
+            get { return dateCreateTime; }
+        }
+
+        public string WriteTime
         {
             get { return dateWriteTime.ToShortDateString() + " " + dateWriteTime.ToLongTimeString(); }
         }
 
-        public string AccessDateTime
+        public DateTime WriteDateTime
+        {
+            get { return dateWriteTime; }
+        }
+
+        public string AccessTime
         {
             get { return dateAccessTime.ToShortDateString() + " " + dateAccessTime.ToLongTimeString(); }
+        }
+
+        public DateTime AccessDateTime
+        {
+            get { return dateAccessTime; }
         }
 
         public override string ToString()
@@ -196,5 +219,7 @@ namespace File_Manager.Model
             //strResult += strTarget;
             return strResult;
         }
+
+        
     }
 }

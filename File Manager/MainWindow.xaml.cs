@@ -5,7 +5,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.Collections.Generic;
+using System.Windows.Media;
 using File_Manager.Model;
+
 
 namespace File_Manager
 {
@@ -148,10 +150,207 @@ namespace File_Manager
         {
             NameLabel.Text = file.Name;
             TypeLabel.Text = file.Type;
+            SizeLabel.Text = file.Size;
             FullPathLabel.Text = file.FullPath;
-            CreateTimeLabel.Text = file.CreateDateTime;
-            LastWriteTimeLabel.Text = file.WriteDateTime;
-            LastAccessTimeLabel.Text = file.AccessDateTime;
+            CreateTimeLabel.Text = file.CreateTime;
+            LastWriteTimeLabel.Text = file.WriteTime;
+            LastAccessTimeLabel.Text = file.AccessTime;
+        }
+
+        private void MoveUpCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            object curItem = SortPriorityList.SelectedItem;
+            int index = SortPriorityList.SelectedIndex;
+            if (index == 0)
+            {
+                return;
+            }
+            SortPriorityList.Items.Remove(curItem);
+            SortPriorityList.Items.Insert(index-1, curItem);
+            SortPriorityList.SelectedIndex = index - 1;
+        }
+
+        private void MoveUpCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SortPriorityList.SelectedIndex > -1)
+            {
+                e.CanExecute = true;
+                return;
+            }
+            e.CanExecute = false;
+            return;
+        }
+
+        private void MoveDownCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            object curItem = SortPriorityList.SelectedItem;
+            int index = SortPriorityList.SelectedIndex;
+            if (index == SortPriorityList.Items.Count -1)
+            {
+                return;
+            }
+            SortPriorityList.Items.Remove(curItem);
+            SortPriorityList.Items.Insert(index + 1, curItem);
+            SortPriorityList.SelectedIndex = index + 1;
+        }
+
+        private void MoveDownCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SortPriorityList.SelectedIndex > -1)
+            {
+                e.CanExecute = true;
+                return;
+            }
+            e.CanExecute = false;
+            return;
+        }
+
+        private void SortFileCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Sort("FileOnly");
+        }
+
+        private void SortFolderCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Sort("FolderOnly");
+        }
+
+        private void SortAllCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Sort("All");
+        }
+
+        private void Sort(string sSortMode)
+        {
+            List<SysFileIf> targetList;
+            List<SysSorter> condList;
+
+            condList = BuildCondition();
+            targetList = SelectFiles(sSortMode);
+            FileComparer newComparer = new FileComparer(condList);
+            targetList.Sort(newComparer);
+            foreach (SysFileIf curItem in targetList)
+            {
+                CurrentFiles.Add(curItem);
+            }
+            FileListView.Items.Clear();
+            FileListView.ItemsSource = CurrentFiles;
+
+            this.RibbonTaskBar.ProgressState = System.Windows.Shell.TaskbarItemProgressState.None;
+        }
+
+        private List<SysFileIf> SelectFiles(string sSortMode)
+        {
+            List<SysFileIf> targetList = new List<SysFileIf>();
+
+            foreach (SysFileIf curItem in CurrentFiles)
+            {
+                switch (sSortMode)
+                {
+                    case "FolderOnly":
+                        if (curItem.Type == "Folder")
+                        {
+                            targetList.Add(curItem);
+                        }
+                        break;
+                    case "All":
+                        targetList.Add(curItem);
+                        break;
+                    default:
+                        if (curItem.Type != "Folder")
+                        {
+                            targetList.Add(curItem);
+                        }
+                        break;
+                }
+            }
+            foreach (SysFileIf curItem in targetList)
+            {
+                CurrentFiles.Remove(curItem);
+            }
+            return targetList;
+        }
+
+        private List<SysSorter> BuildCondition()
+        {
+            List<SysSorter> resultList = new List<SysSorter>();
+
+            foreach (StackPanel curItem in SortPriorityList.Items)
+            {
+                SysSorter newCond;
+
+                if (((TextBlock)curItem.Children[0]).Text == "Name")
+                {
+                    if (((CheckBox)curItem.Children[1]).IsChecked == false)
+                    {
+                        newCond = new SysSorter(SortField.Name, SortDirectrion.Ascending);
+                    }
+                    else
+                    {
+                        newCond = new SysSorter(SortField.Name, SortDirectrion.Descending);
+                    }
+                    resultList.Add(newCond);
+                    continue;
+                }
+
+                if (((TextBlock)curItem.Children[0]).Text == "Type")
+                {
+                    if (((CheckBox)curItem.Children[1]).IsChecked == false)
+                    {
+                        newCond = new SysSorter(SortField.Type, SortDirectrion.Ascending);
+                    }
+                    else
+                    {
+                        newCond = new SysSorter(SortField.Type, SortDirectrion.Descending);
+                    }
+                    resultList.Add(newCond);
+                    continue;
+                }
+
+                if (((TextBlock)curItem.Children[0]).Text == "Size")
+                {
+                    if (((CheckBox)curItem.Children[1]).IsChecked == false)
+                    {
+                        newCond = new SysSorter(SortField.Size, SortDirectrion.Ascending);
+                    }
+                    else
+                    {
+                        newCond = new SysSorter(SortField.Size, SortDirectrion.Descending);
+                    }
+                    resultList.Add(newCond);
+                    continue;
+                }
+
+                if (((TextBlock)curItem.Children[0]).Text == "Create Time")
+                {
+                    if (((CheckBox)curItem.Children[1]).IsChecked == false)
+                    {
+                        newCond = new SysSorter(SortField.CreateTime, SortDirectrion.Ascending);
+                    }
+                    else
+                    {
+                        newCond = new SysSorter(SortField.CreateTime, SortDirectrion.Descending);
+                    }
+                    resultList.Add(newCond);
+                    continue;
+                }
+                
+                if (((TextBlock)curItem.Children[0]).Text == "Write Time")
+                {
+                    if (((CheckBox)curItem.Children[1]).IsChecked == false)
+                    {
+                        newCond = new SysSorter(SortField.WriteTime, SortDirectrion.Ascending);
+                    }
+                    else
+                    {
+                        newCond = new SysSorter(SortField.WriteTime, SortDirectrion.Descending);
+                    }
+                    resultList.Add(newCond);
+                    continue;
+                }
+            }
+
+            return resultList;
         }
 
     }

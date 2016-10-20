@@ -20,6 +20,11 @@
     <r:RibbonWindow.CommandBindings>
         <CommandBinding x:Name="OpenCommand" Command="{StaticResource OpenCommand}" Executed="OpenCommand_Executed"></CommandBinding>
         <CommandBinding x:Name="ExitCommand" Command="{StaticResource ExitCommand}" Executed="ExitCommand_Executed"></CommandBinding>
+        <CommandBinding x:Name="MoveUpCommand" Command="{StaticResource MoveUpCommand}" Executed="MoveUpCommand_Executed" CanExecute="MoveUpCommand_CanExecute" ></CommandBinding>
+        <CommandBinding x:Name="MoveDownCommand" Command="{StaticResource MoveDownCommand}" Executed="MoveDownCommand_Executed" CanExecute="MoveDownCommand_CanExecute" ></CommandBinding>
+        <CommandBinding x:Name="SortFileCommand" Command="{StaticResource SortFileCommand}" Executed="SortFileCommand_Executed"></CommandBinding>
+        <CommandBinding x:Name="SortFolderCommand" Command="{StaticResource SortFolderCommand}" Executed="SortFolderCommand_Executed" ></CommandBinding>
+        <CommandBinding x:Name="SortAllCommand" Command="{StaticResource SortAllCommand}" Executed="SortAllCommand_Executed" ></CommandBinding>
     </r:RibbonWindow.CommandBindings>
     <Grid Name="MainLayout" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window, AncestorLevel=1}}">
         <Grid.Resources>
@@ -91,11 +96,27 @@
             </r:Ribbon.ApplicationMenu>
             <r:RibbonTab Name = "ribHomeTab" Header="Home" >
                 <r:RibbonGroup Header="Sort" GroupSizeDefinitions="{StaticResource RibbonLayout}">
-                    <ListBox Name="AddNodeProperties" Height="64" MinWidth="60">
-                        <CheckBox Content="Name"/>
-                        <CheckBox Content="Type"/>
-                        <CheckBox Content="CreateTime"/>
-                        <CheckBox Content="WriteTime"/>
+                    <ListBox Name="SortPriorityList" Height="64" MinWidth="60">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="NameListItem" Margin="2" Width="70">Name</TextBlock>
+                            <CheckBox Name="NameDecCheck" VerticalContentAlignment="Center" VerticalAlignment="Center">Descend</CheckBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="TypeListItem" Margin="2" Width="70">Type</TextBlock>
+                            <CheckBox Name="TypeDecCheck" VerticalContentAlignment="Center" VerticalAlignment="Center">Descend</CheckBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="SizeListItem" Margin="2" Width="70">Size</TextBlock>
+                            <CheckBox Name="SizeDecCheck" VerticalContentAlignment="Center" VerticalAlignment="Center">Descend</CheckBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="CreateTimeListItem" Margin="2" Width="70">Create Time</TextBlock>
+                            <CheckBox Name="CreateTimeDecCheck" VerticalContentAlignment="Center" VerticalAlignment="Center">Descend</CheckBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Name="WriteTimeListItem" Margin="2" Width="70">Write Time</TextBlock>
+                            <CheckBox Name="WriteTimeDecCheck" VerticalContentAlignment="Center" VerticalAlignment="Center">Descend</CheckBox>
+                        </StackPanel>
                     </ListBox>
                     <r:RibbonButton Label="Move Up" Command="{StaticResource MoveUpCommand}" LargeImageSource="/File Manager;component/images/MoveUp.png" SmallImageSource="/File Manager;component/images/MoveUp_16x16.png" ToolTipTitle="Move Up" ToolTipDescription="{StaticResource MoveUpTip}"></r:RibbonButton>
                     <r:RibbonButton Label="Move Down" Command="{StaticResource MoveDownCommand}" LargeImageSource="/File Manager;component/images/MoveDown.png" SmallImageSource="/File Manager;component/images/MoveUp_16x16.png" ToolTipTitle="Move Down" ToolTipDescription="{StaticResource MoveDownTip}"></r:RibbonButton>
@@ -174,6 +195,7 @@
                         <RowDefinition Height="Auto" MinHeight="30"/>
                         <RowDefinition Height="Auto" MinHeight="30"/>
                         <RowDefinition Height="Auto" MinHeight="30"/>
+                        <RowDefinition Height="Auto" MinHeight="30"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
@@ -184,14 +206,16 @@
                     <TextBox x:Name="NameLabel" Margin="3" Grid.Row="0" Grid.Column="1" TextAlignment="Left" IsReadOnly="True" ></TextBox>
                     <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="1" Grid.Column="0" TextAlignment="Right">File Type:</TextBlock>
                     <TextBox x:Name="TypeLabel" Margin="3" Grid.Row="1" Grid.Column="1" TextAlignment="Left" IsReadOnly="True"></TextBox>
-                    <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="2" Grid.Column="0" TextAlignment="Right">Full Path:</TextBlock>
-                    <TextBox x:Name="FullPathLabel" Margin="3" Grid.Row="2" Grid.Column="1" TextAlignment="Left" IsReadOnly="True"></TextBox>
-                    <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="3" Grid.Column="0" TextAlignment="Right">Create Time:</TextBlock>
-                    <TextBox x:Name="CreateTimeLabel" Margin="3" Grid.Row="3" Grid.Column="1" TextAlignment="Left" IsReadOnly="True"></TextBox>
-                    <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="4" Grid.Column="0" TextAlignment="Right">Last Write Time:</TextBlock>
-                    <TextBox x:Name="LastWriteTimeLabel" Margin="3" Grid.Row="4" Grid.Column="1" TextAlignment="Left" IsReadOnly="True"></TextBox>
-                    <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="5" Grid.Column="0" TextAlignment="Right">Last Access Time:</TextBlock>
-                    <TextBox x:Name="LastAccessTimeLabel" Margin="3" Grid.Row="5" Grid.Column="1" TextAlignment="Left" IsReadOnly="True"></TextBox>
+                    <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="2" Grid.Column="0" TextAlignment="Right">File Size:</TextBlock>
+                    <TextBox x:Name="SizeLabel" Margin="3" Grid.Row="2" Grid.Column="1" TextAlignment="Left" IsReadOnly="True"></TextBox>
+                    <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="3" Grid.Column="0" TextAlignment="Right">Full Path:</TextBlock>
+                    <TextBox x:Name="FullPathLabel" Margin="3" Grid.Row="3" Grid.Column="1" TextAlignment="Left" IsReadOnly="True"></TextBox>
+                    <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="4" Grid.Column="0" TextAlignment="Right">Create Time:</TextBlock>
+                    <TextBox x:Name="CreateTimeLabel" Margin="3" Grid.Row="4" Grid.Column="1" TextAlignment="Left" IsReadOnly="True"></TextBox>
+                    <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="5" Grid.Column="0" TextAlignment="Right">Last Write Time:</TextBlock>
+                    <TextBox x:Name="LastWriteTimeLabel" Margin="3" Grid.Row="5" Grid.Column="1" TextAlignment="Left" IsReadOnly="True"></TextBox>
+                    <TextBlock VerticalAlignment="Center" Margin="3" Grid.Row="6" Grid.Column="0" TextAlignment="Right">Last Access Time:</TextBlock>
+                    <TextBox x:Name="LastAccessTimeLabel" Margin="3" Grid.Row="6" Grid.Column="1" TextAlignment="Left" IsReadOnly="True"></TextBox>
                 </Grid>
             </GroupBox>
         </Border>
