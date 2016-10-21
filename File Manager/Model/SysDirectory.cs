@@ -151,6 +151,13 @@ namespace File_Manager.Model
             return strResult;
         }
 
-        
+        public string NewFilePath(string newName)
+        {
+            int len = Name.Length;
+            int pathlen = strPath.Length;
+            string strNewPath = strPath.Substring(0, pathlen - len);
+            string newFullName = strNewPath + newName;
+            return newFullName;
+        }
     }
 }

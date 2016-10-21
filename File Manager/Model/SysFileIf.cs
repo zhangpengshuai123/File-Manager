@@ -19,6 +19,7 @@ namespace File_Manager.Model
         DateTime WriteDateTime { get; }
         string AccessTime { get; }
         DateTime AccessDateTime { get; }
+        string NewFilePath(string newName);
     }
 
     class FileComparer : IComparer<SysFileIf>

@@ -11,6 +11,7 @@ namespace File_Manager.Model
         string strType;
         string strPath;
         string fileIcon;
+        string strExtension;
         DateTime dateCreateTime;
         DateTime dateWriteTime;
         DateTime dateAccessTime;
@@ -20,6 +21,7 @@ namespace File_Manager.Model
             lngSize = info.Length;
             strName = info.Name;
             strPath = info.DirectoryName;
+            strExtension = info.Extension;
             fileIcon = SetIcon(info.Extension);
             dateCreateTime = info.CreationTime;
             dateWriteTime = info.LastWriteTime;
@@ -220,6 +222,10 @@ namespace File_Manager.Model
             return strResult;
         }
 
-        
+        public string NewFilePath(string newName)
+        {
+            string newFullName = newName + strExtension;
+            return System.IO.Path.Combine(Path, newFullName);
+        }
     }
 }

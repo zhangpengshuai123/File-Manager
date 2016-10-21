@@ -25,6 +25,9 @@
         <CommandBinding x:Name="SortFileCommand" Command="{StaticResource SortFileCommand}" Executed="SortFileCommand_Executed"></CommandBinding>
         <CommandBinding x:Name="SortFolderCommand" Command="{StaticResource SortFolderCommand}" Executed="SortFolderCommand_Executed" ></CommandBinding>
         <CommandBinding x:Name="SortAllCommand" Command="{StaticResource SortAllCommand}" Executed="SortAllCommand_Executed" ></CommandBinding>
+        <CommandBinding x:Name="RenameFileCommand" Command="{StaticResource RenameFileCommand}" Executed="RenameFileCommand_Executed" ></CommandBinding>
+        <CommandBinding x:Name="RenameFolderCommand" Command="{StaticResource RenameFolderCommand}" Executed="RenameFolderCommand_Executed" ></CommandBinding>
+        <CommandBinding x:Name="RenameAllCommand" Command="{StaticResource RenameAllCommand}" Executed="RenameAllCommand_Executed" ></CommandBinding>
     </r:RibbonWindow.CommandBindings>
     <Grid Name="MainLayout" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window, AncestorLevel=1}}">
         <Grid.Resources>
@@ -128,7 +131,33 @@
                     </r:RibbonSplitButton>
                 </r:RibbonGroup>
                 <r:RibbonGroup Header="Rename" GroupSizeDefinitions="{StaticResource RibbonLayout}">
-                    
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="32"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="60"/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox x:Name="PrefixCheckBox" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="3">Prefix:</CheckBox>
+                        <TextBox x:Name="PrefixBox" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center"  IsEnabled="{Binding IsChecked, ElementName=PrefixCheckBox}" TextChanged="PrefixBox_TextChanged"></TextBox>
+                        <CheckBox x:Name="SuffixCheckBox" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="3">Suffix:</CheckBox>
+                        <TextBox x:Name="SuffixBox" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" IsEnabled="{Binding IsChecked, ElementName=SuffixCheckBox}" TextChanged="SuffixBox_TextChanged" ></TextBox>
+                        <Label Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="3">Start:</Label>
+                        <TextBox x:Name="StartBox" Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" TextAlignment="Center" TextChanged="StartBox_TextChanged" >0</TextBox>
+                        <Label Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="3">Step:</Label>
+                        <TextBox x:Name="StepBox" Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" TextAlignment="Center" TextChanged="StepBox_TextChanged" >1</TextBox>
+                    </Grid>
+                    <r:RibbonToggleButton Name="PreviewButton" Label="Rename Preview" LargeImageSource="/File Manager;component/images/Preview.png" SmallImageSource="/File Manager;component/images/Preview_16x16.png" ToolTipTitle="Preview" ToolTipDescription="{StaticResource PreviewTip}" Click="PreviewButton_Click"></r:RibbonToggleButton>
+                    <r:RibbonSplitButton Label="Rename File" Command="{StaticResource RenameFileCommand}" LargeImageSource="/File Manager;component/images/ExeSort.png" SmallImageSource="/File Manager;component/images/ExeSort_16x16.png" ToolTipTitle="Rename File" ToolTipDescription="{StaticResource RenameFileTip}">
+                        <r:RibbonSplitButton.Items>
+                            <r:RibbonButton Label="Rename Folder" Command="{StaticResource RenameFolderCommand}" LargeImageSource="/File Manager;component/images/ExeSort.png" SmallImageSource="/File Manager;component/images/ExeSort_16x16.png" ToolTipTitle="Rename Folder" ToolTipDescription="{StaticResource RenameFolderTip}"></r:RibbonButton>
+                            <r:RibbonButton Label="Rename All" Command="{StaticResource RenameAllCommand}" LargeImageSource="/File Manager;component/images/ExeSort.png" SmallImageSource="/File Manager;component/images/ExeSort_16x16.png" ToolTipTitle="Rename All" ToolTipDescription="{StaticResource RenameAllTip}"></r:RibbonButton>
+                        </r:RibbonSplitButton.Items>
+                    </r:RibbonSplitButton>
                 </r:RibbonGroup>
             </r:RibbonTab>
         </r:Ribbon>
@@ -140,7 +169,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Label Grid.Column="0" Margin="3" >Current Directory:</Label>
-                <TextBox x:Name="PathName" Grid.Column="1" Margin="3" Text="{DynamicResource CurrentPath}" IsReadOnly="True"></TextBox>
+                <TextBox x:Name="PathBox" Grid.Column="1" Margin="3" Text="{DynamicResource CurrentPath}" IsReadOnly="True"></TextBox>
                 <Button Name="OpenPathButton" Grid.Column="2" Width="100" Margin="3"  Command="{DynamicResource OpenCommand}" >
                     Open
                 </Button>
@@ -221,8 +250,11 @@
         </Border>
         <GridSplitter HorizontalAlignment="Center" Grid.Column="1" Grid.Row="2" Width="3"></GridSplitter>
         <StatusBar Name="MainStatus" Grid.Row="3" Grid.ColumnSpan="3">
-            <StatusBarItem>
-                <Label Name="StatusLabel">Ready</Label>
+            <StatusBarItem Width="300">
+                <Label Name="StatusLabel" MaxWidth="200">Ready</Label>
+            </StatusBarItem>
+            <StatusBarItem >
+                <Label Name="PreviewLabel" MaxWidth="400" Visibility="Hidden" >Preview</Label>
             </StatusBarItem>
         </StatusBar>
     </Grid>

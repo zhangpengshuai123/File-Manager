@@ -11,5 +11,8 @@
     <sys:String x:Key="SortFileTip">Sort all files without folders.</sys:String>
     <sys:String x:Key="SortFolderTip">Sort all folders.</sys:String>
     <sys:String x:Key="SortAllTip">Sort files and folders.</sys:String>
-
+    <sys:String x:Key="RenameFileTip">Rename all files without folders.</sys:String>
+    <sys:String x:Key="RenameFolderTip">Rename all folders.</sys:String>
+    <sys:String x:Key="RenameAllTip">Rename files and folders.</sys:String>
+    <sys:String x:Key="PreviewTip">Preview the format of rename.</sys:String>
 </ResourceDictionary>

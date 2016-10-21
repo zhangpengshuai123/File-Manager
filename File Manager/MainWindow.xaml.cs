@@ -18,10 +18,12 @@ namespace File_Manager
     {
         DispatcherTimer StatusUpadteTimer;
         List<SysFileIf> CurrentFiles;
+        bool isFormLoaded = false;
 
         public MainWindow()
         {
             InitializeComponent();
+            isFormLoaded = true;
         }
 
         private void FrmMain_Loaded(object sender, RoutedEventArgs e)
@@ -33,6 +35,8 @@ namespace File_Manager
         public void InitCustomerData()
         {
             string DesktopFolder;
+
+            BuildPreviewString();
             //根据当前用户PC具体环境，选择桌面作为初始目录
             DesktopFolder = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
             MainLayout.Resources["CurrentPath"] = DesktopFolder;
@@ -66,6 +70,7 @@ namespace File_Manager
         }
         #endregion
 
+        #region FileList
         private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             System.Windows.Forms.FolderBrowserDialog opendialog;
@@ -155,7 +160,9 @@ namespace File_Manager
             LastWriteTimeLabel.Text = file.WriteTime;
             LastAccessTimeLabel.Text = file.AccessTime;
         }
+        #endregion
 
+        #region FileSort
         private void MoveUpCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             object curItem = SortPriorityList.SelectedItem;
@@ -221,23 +228,23 @@ namespace File_Manager
 
         private void Sort(string sSortMode)
         {
-            List<SysFileIf> targetList;
+            List<SysFileIf> sortList;
             List<SysSorter> condList;
 
             condList = BuildCondition();
-            targetList = SelectFiles(sSortMode);
+            sortList = SelectSortFiles(sSortMode);
             FileComparer newComparer = new FileComparer(condList);
-            targetList.Sort(newComparer);
+            sortList.Sort(newComparer);
             FileListView.ItemsSource = null;
-            AdjustList(sSortMode, targetList);
+            AdjustList(sSortMode, sortList);
             FileListView.ItemsSource = CurrentFiles;
 
-            this.RibbonTaskBar.ProgressState = System.Windows.Shell.TaskbarItemProgressState.None;
+            ShowStatus("Sort Completed");
         }
 
-        private List<SysFileIf> SelectFiles(string sSortMode)
+        private List<SysFileIf> SelectSortFiles(string sSortMode)
         {
-            List<SysFileIf> targetList = new List<SysFileIf>();
+            List<SysFileIf> sortList = new List<SysFileIf>();
 
             foreach (SysFileIf curItem in CurrentFiles)
             {
@@ -246,25 +253,25 @@ namespace File_Manager
                     case "FolderOnly":
                         if (curItem.Type == "Folder")
                         {
-                            targetList.Add(curItem);
+                            sortList.Add(curItem);
                         }
                         break;
                     case "All":
-                        targetList.Add(curItem);
+                        sortList.Add(curItem);
                         break;
                     default:
                         if (curItem.Type != "Folder")
                         {
-                            targetList.Add(curItem);
+                            sortList.Add(curItem);
                         }
                         break;
                 }
             }
-            foreach (SysFileIf curItem in targetList)
+            foreach (SysFileIf curItem in sortList)
             {
                 CurrentFiles.Remove(curItem);
             }
-            return targetList;
+            return sortList;
         }
 
         private List<SysSorter> BuildCondition()
@@ -367,5 +374,193 @@ namespace File_Manager
             }
             return;
         }
+        #endregion
+
+        #region Rename
+        private void PreviewButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (PreviewButton.IsChecked == true)
+            {
+                PreviewLabel.Visibility = Visibility.Visible;
+                return;
+            }
+            PreviewLabel.Visibility = Visibility.Hidden;
+            return;
+        }
+
+        private void PrefixBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (isFormLoaded == false)
+            {
+                return;
+            }
+            BuildPreviewString();
+        }
+
+        private void SuffixBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (isFormLoaded == false)
+            {
+                return;
+            }
+            BuildPreviewString();
+        }
+
+        private void StartBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            int intResult;
+            if (isFormLoaded == false)
+            {
+                return;
+            }
+            if (int.TryParse(StartBox.Text, out intResult) == false)
+            {
+                ShowStatus("Please input number in the Start box");
+                return;
+            }
+            BuildPreviewString();
+        }
+
+        private void StepBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            int intResult;
+            if (isFormLoaded == false)
+            {
+                return;
+            }
+            if (int.TryParse(StartBox.Text, out intResult) == false)
+            {
+                ShowStatus("Please input number in the Step box");
+                return;
+            }
+            BuildPreviewString();
+        }
+
+        private void BuildPreviewString()
+        {
+            string strPrefix = PrefixBox.Text;
+            string strSuffix = SuffixBox.Text;
+            int intStart, intStep;
+            string strPreview = "";
+
+            int.TryParse(StartBox.Text, out intStart);
+            int.TryParse(StepBox.Text, out intStep);
+            for (int index = 0; index < 2; index++)
+            {
+                strPreview += strPrefix + intStart.ToString() + strSuffix + " ";
+                intStart += intStep;
+            }
+            strPreview += "...";
+            PreviewLabel.Content = "Preview: "+strPreview;
+        }
+
+        private void RenameFileCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Rename("FileOnly");
+        }
+
+        private void RenameFolderCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Rename("FolderOnly");
+        }
+
+        private void RenameAllCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Rename("All");
+        }
+
+        private void Rename(string sRenameMode)
+        {
+            List<SysFileIf> renameList;
+            string strPrefix = PrefixBox.Text;
+            string strSuffix = SuffixBox.Text;
+            int intStart, intStep, index;
+            string strNewName;
+            string strOldPath, strNewPath;
+            string strFormat;
+
+            renameList = SelectRenameFile(sRenameMode);
+            strFormat = BuildFormatString(renameList.Count);
+            int.TryParse(StartBox.Text, out intStart);
+            int.TryParse(StepBox.Text, out intStep);
+            index = 0;
+            foreach (SysFileIf curFile in renameList)
+            {
+                strOldPath = curFile.FullPath;
+                strNewName = strPrefix + (intStart + intStep * index).ToString(strFormat) + strSuffix;
+                strNewPath = curFile.NewFilePath(strNewName);
+                if (curFile.Type == "Folder")
+                {
+                    if (Directory.Exists(strNewPath) == true)
+                    {
+                        ShowStatus("New folder is conflict with an old one, please change it.");
+                        return;
+                    }
+                }
+                else
+                {
+                    if (File.Exists(strNewPath) == true)
+                    {
+                        ShowStatus("New file is conflict with an old one, please change it.");
+                        return;
+                    }
+                }
+                index++;
+            }
+            index = 0;
+            foreach (SysFileIf curFile in renameList)
+            {
+                strOldPath = curFile.FullPath;
+                strNewName = strPrefix + (intStart + intStep * index).ToString(strFormat) + strSuffix;
+                strNewPath = curFile.NewFilePath(strNewName);
+                if (curFile.Type == "Folder")
+                {
+                    Directory.Move(strOldPath, strNewPath);
+                }
+                else
+                {
+                    File.Move(strOldPath, strNewPath);
+                }
+                index++;
+            }
+            UpdateFileList(PathBox.Text);
+        }
+
+        private List<SysFileIf> SelectRenameFile(string sRenameMode)
+        {
+            List<SysFileIf> renameList = new List<SysFileIf>();
+
+            foreach (SysFileIf curItem in CurrentFiles)
+            {
+                switch (sRenameMode)
+                {
+                    case "FolderOnly":
+                        if (curItem.Type == "Folder")
+                        {
+                            renameList.Add(curItem);
+                        }
+                        break;
+                    case "All":
+                        renameList.Add(curItem);
+                        break;
+                    default:
+                        if (curItem.Type != "Folder")
+                        {
+                            renameList.Add(curItem);
+                        }
+                        break;
+                }
+            }
+            return renameList;
+        }
+
+        private string BuildFormatString(int iCount)
+        {
+            int len = iCount.ToString().Length;
+            return "D" + len.ToString();
+        }
+
+        #endregion
+
     }
 }

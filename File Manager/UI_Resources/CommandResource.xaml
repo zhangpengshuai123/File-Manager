@@ -12,4 +12,8 @@
     <RoutedUICommand x:Key="SortFileCommand" Text="SortFile" />
     <RoutedUICommand x:Key="SortFolderCommand" Text="SortFolder" />
     <RoutedUICommand x:Key="SortAllCommand" Text="SortAll" />
+
+    <RoutedUICommand x:Key="RenameFileCommand" Text="RenameFile" />
+    <RoutedUICommand x:Key="RenameFolderCommand" Text="RenameFolder" />
+    <RoutedUICommand x:Key="RenameAllCommand" Text="RenameAll" />
 </ResourceDictionary>
