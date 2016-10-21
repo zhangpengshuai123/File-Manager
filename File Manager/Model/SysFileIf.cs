@@ -96,11 +96,11 @@ namespace File_Manager.Model
                 case SortField.WriteTime:
                     if (direction == SortDirectrion.Ascending)
                     {
-                        result = x.AccessDateTime.CompareTo(y.AccessDateTime);
+                        result = x.WriteDateTime.CompareTo(y.WriteDateTime);
                     }
                     else
                     {
-                        result = y.AccessDateTime.CompareTo(x.AccessDateTime);
+                        result = y.WriteDateTime.CompareTo(x.WriteDateTime);
                     }
                     break;
             }

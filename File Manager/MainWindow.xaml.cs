@@ -97,22 +97,21 @@ namespace File_Manager
                 DirectoryInfo[] dirs = currentDir.GetDirectories(); //获取目录
                 FileInfo[] files = currentDir.GetFiles();   //获取文件
                 
-                FileListView.Items.Clear();
                 CurrentFiles.Clear();
+                FileListView.ItemsSource = null;
                 //列出文件夹
                 foreach (DirectoryInfo dir in dirs)
                 {
                     SysDirectory newDirItem = new SysDirectory(dir);
                     CurrentFiles.Add(newDirItem);
-                    FileListView.Items.Add(newDirItem);
                 }
                 //列出文件
                 foreach (FileInfo file in files)
                 {
                     SysFile newFileItem = new SysFile(file);
                     CurrentFiles.Add(newFileItem);
-                    FileListView.Items.Add(newFileItem);
                 }
+                FileListView.ItemsSource = CurrentFiles;
             }
             catch (Exception ex)
             {
@@ -229,11 +228,8 @@ namespace File_Manager
             targetList = SelectFiles(sSortMode);
             FileComparer newComparer = new FileComparer(condList);
             targetList.Sort(newComparer);
-            foreach (SysFileIf curItem in targetList)
-            {
-                CurrentFiles.Add(curItem);
-            }
-            FileListView.Items.Clear();
+            FileListView.ItemsSource = null;
+            AdjustList(sSortMode, targetList);
             FileListView.ItemsSource = CurrentFiles;
 
             this.RibbonTaskBar.ProgressState = System.Windows.Shell.TaskbarItemProgressState.None;
@@ -353,5 +349,23 @@ namespace File_Manager
             return resultList;
         }
 
+        private void AdjustList(string sSortMode, List<SysFileIf> targetList)
+        {
+            int index = 0;
+            if (sSortMode == "All" || sSortMode == "FileOnly")
+            {
+                foreach (SysFileIf curItem in targetList)
+                {
+                    CurrentFiles.Add(curItem);
+                }
+                return;
+            }
+            foreach (SysFileIf curItem in targetList)
+            {
+                CurrentFiles.Insert(index, curItem);
+                index++;
+            }
+            return;
+        }
     }
 }
