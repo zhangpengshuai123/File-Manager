@@ -75,8 +75,7 @@ namespace File_Manager.Model
         {
             get
             {
-                return Name;
-                //return ParaString(Name, 6);
+                return Name.Replace(strExtension, "" );
             }
         }
 

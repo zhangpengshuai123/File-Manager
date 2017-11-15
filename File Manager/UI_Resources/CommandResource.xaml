@@ -6,6 +6,7 @@
     <RoutedUICommand x:Key="ExitCommand" Text="Exit" />
     <RoutedUICommand x:Key="ClearComCommand" Text="ClearCommand" />
     <RoutedUICommand x:Key="ClearResultCommand" Text="ClearResult" />
+    <RoutedUICommand x:Key="RefreshCommand" Text="Refresh" />
 
     <RoutedUICommand x:Key="MoveUpCommand" Text="MoveUp" />
     <RoutedUICommand x:Key="MoveDownCommand" Text="MoveDown" />
@@ -16,4 +17,10 @@
     <RoutedUICommand x:Key="RenameFileCommand" Text="RenameFile" />
     <RoutedUICommand x:Key="RenameFolderCommand" Text="RenameFolder" />
     <RoutedUICommand x:Key="RenameAllCommand" Text="RenameAll" />
+
+    <RoutedUICommand x:Key="FormatFileCommand" Text="FormatFile" />
+    <RoutedUICommand x:Key="FormatFolderCommand" Text="FormatFolder" />
+    <RoutedUICommand x:Key="FormatAllCommand" Text="FormatAll" />
+
+    <RoutedUICommand x:Key="RecursiveModifyCommand" Text="RecursiveModify" />
 </ResourceDictionary>

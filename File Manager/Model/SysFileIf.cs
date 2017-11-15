@@ -11,6 +11,7 @@ namespace File_Manager.Model
         string Name { get; }
         string Type { get; }
         string Size { get; }
+        string DisplayName { get; }
         long SizeValue { get; }
         string FullPath { get; }
         string CreateTime { get; }

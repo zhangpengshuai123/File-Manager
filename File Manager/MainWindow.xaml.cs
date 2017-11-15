@@ -5,6 +5,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Media;
 using File_Manager.Model;
 
@@ -98,30 +101,36 @@ namespace File_Manager
             }
             try
             {
-                DirectoryInfo currentDir = new DirectoryInfo(strPath);
-                DirectoryInfo[] dirs = currentDir.GetDirectories(); //获取目录
-                FileInfo[] files = currentDir.GetFiles();   //获取文件
-                
-                CurrentFiles.Clear();
                 FileListView.ItemsSource = null;
-                //列出文件夹
-                foreach (DirectoryInfo dir in dirs)
-                {
-                    SysDirectory newDirItem = new SysDirectory(dir);
-                    CurrentFiles.Add(newDirItem);
-                }
-                //列出文件
-                foreach (FileInfo file in files)
-                {
-                    SysFile newFileItem = new SysFile(file);
-                    CurrentFiles.Add(newFileItem);
-                }
+                DirectoryInfo curDir = new DirectoryInfo(strPath);
+                CurrentFiles = GetFileList(curDir);
                 FileListView.ItemsSource = CurrentFiles;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private List<SysFileIf> GetFileList(DirectoryInfo curDir)
+        {
+            DirectoryInfo[] dirs = curDir.GetDirectories(); //获取目录
+            FileInfo[] files = curDir.GetFiles();   //获取文件
+            List<SysFileIf> fileList = new List<SysFileIf>();
+
+            //列出文件夹
+            foreach (DirectoryInfo dir in dirs)
+            {
+                SysDirectory newDirItem = new SysDirectory(dir);
+                fileList.Add(newDirItem);
+            }
+            //列出文件
+            foreach (FileInfo file in files)
+            {
+                SysFile newFileItem = new SysFile(file);
+                fileList.Add(newFileItem);
+            }
+            return fileList;
         }
 
         private void ExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -159,6 +168,36 @@ namespace File_Manager
             CreateTimeLabel.Text = file.CreateTime;
             LastWriteTimeLabel.Text = file.WriteTime;
             LastAccessTimeLabel.Text = file.AccessTime;
+        }
+
+        private void RefreshCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            UpdateFileList(PathBox.Text);
+        }
+
+        private void GoUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            DirectoryInfo currentDir = new DirectoryInfo(PathBox.Text);
+            if( currentDir.Parent == null )
+            {
+                return;
+            }
+            PathBox.Text = currentDir.Parent.FullName;
+            UpdateFileList(PathBox.Text);
+        }
+
+        private void FileListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if( ((ListView) sender).SelectedItem == null )
+            {
+                return;
+            }
+            SysFileIf currentFile = (SysFileIf)((ListView)sender).SelectedItem;
+            if (currentFile.Type == "Folder")
+            {
+                PathBox.Text = currentFile.FullPath;
+                UpdateFileList(PathBox.Text);
+            }
         }
         #endregion
 
@@ -232,7 +271,7 @@ namespace File_Manager
             List<SysSorter> condList;
 
             condList = BuildCondition();
-            sortList = SelectSortFiles(sSortMode);
+            sortList = SelectSortFiles(CurrentFiles, sSortMode);
             FileComparer newComparer = new FileComparer(condList);
             sortList.Sort(newComparer);
             FileListView.ItemsSource = null;
@@ -242,11 +281,11 @@ namespace File_Manager
             ShowStatus("Sort Completed");
         }
 
-        private List<SysFileIf> SelectSortFiles(string sSortMode)
+        private List<SysFileIf> SelectSortFiles(List<SysFileIf> list, string sSortMode)
         {
             List<SysFileIf> sortList = new List<SysFileIf>();
 
-            foreach (SysFileIf curItem in CurrentFiles)
+            foreach (SysFileIf curItem in list)
             {
                 switch (sSortMode)
                 {
@@ -269,7 +308,7 @@ namespace File_Manager
             }
             foreach (SysFileIf curItem in sortList)
             {
-                CurrentFiles.Remove(curItem);
+                list.Remove(curItem);
             }
             return sortList;
         }
@@ -562,5 +601,111 @@ namespace File_Manager
 
         #endregion
 
+        #region Tools
+
+        private void FormatFileCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            FormatName("FileOnly");
+        }
+
+        private void FormatFolderCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            FormatName("FolderOnly");
+        }
+
+        private void FormatAllCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            FormatName("All");
+        }
+
+        private void FormatName(string sRenameMode)
+        {
+            List<SysFileIf> renameList;
+            string strNewName;
+            string strOldPath, strNewPath;
+            string strFormat;
+
+            renameList = SelectRenameFile(sRenameMode);
+            strFormat = BuildFormatString(renameList.Count);
+
+            foreach (SysFileIf curFile in renameList)
+            {
+                strOldPath = curFile.FullPath;
+                strNewName = FormatName( curFile.DisplayName, strFormat );
+                strNewPath = curFile.NewFilePath(strNewName);
+                if (curFile.Type == "Folder")
+                {
+                    Directory.Move(strOldPath, strNewPath);
+                }
+                else
+                {
+                    File.Move(strOldPath, strNewPath);
+                }
+
+            }
+            UpdateFileList(PathBox.Text);
+        }
+
+        private string FormatName(string oldName, string strFormat)
+        {
+            const string pattern = @"[\d]+";
+            Regex rex = new Regex( pattern );
+            string newName = oldName;
+            var match = rex.Match( oldName );
+            int index;
+            int.TryParse( match.Value, NumberStyles.Integer, new CultureInfo( "en-US" ), out index  );
+            newName = newName.Replace( match.Value, index.ToString( strFormat ) );
+            return newName;
+        }
+
+        private void RecursiveModifyCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            List<SysSorter> condition = BuildCondition();
+            DirectoryInfo curDir = new DirectoryInfo( PathBox.Text );
+
+            foreach( var curItem in curDir.GetDirectories())
+            {
+                List<SysFileIf> sortList = SelectFilesInFolder(curItem, condition);
+                if( sortList.Count == 0 )
+                {
+                    continue;
+                }
+                RenameFilesInFolder(sortList);
+            }
+        }
+
+        private List<SysFileIf> SelectFilesInFolder(DirectoryInfo curDir, List<SysSorter> condition)
+        {
+            List<SysFileIf> sortList = GetFileList( curDir );
+            
+            sortList = SelectSortFiles(sortList, "FileOnly");
+            FileComparer newComparer = new FileComparer(condition);
+            sortList.Sort(newComparer);
+            return sortList;
+        }
+
+        private void RenameFilesInFolder(List<SysFileIf> renameList)
+        {
+            string strPrefix = PrefixBox.Text;
+            string strSuffix = SuffixBox.Text;
+            int intStart, intStep;
+
+            var strFormat = BuildFormatString(renameList.Count);
+            int.TryParse(StartBox.Text, out intStart);
+            int.TryParse(StepBox.Text, out intStep);
+            var index = 0;
+            foreach (SysFileIf curFile in renameList)
+            {
+                var strOldPath = curFile.FullPath;
+                var strNewName = strPrefix + (intStart + intStep * index).ToString(strFormat) + strSuffix;
+                var strNewPath = curFile.NewFilePath(strNewName);
+                File.Move(strOldPath, strNewPath);
+                index++;
+            }
+        }
+
+        #endregion
+
+        
     }
 }

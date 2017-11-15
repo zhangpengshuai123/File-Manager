@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>images\FileManager.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="RibbonControlsLibrary, Version=4.0.0.11019, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -151,6 +154,18 @@
   <ItemGroup>
     <Resource Include="images\Preview.png" />
     <Resource Include="images\Preview_16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\FormatButton.png" />
+    <Resource Include="images\FormatButton_16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Recursive.png" />
+    <Resource Include="images\Recursive_16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Refresh.png" />
+    <Resource Include="images\Refresh_16x16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
