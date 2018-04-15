@@ -79,6 +79,14 @@ namespace File_Manager.Model
             }
         }
 
+        public string Extension
+        {
+            get
+            {
+                return strExtension;
+            }
+        }
+
         public string FullPath
         {
             get {

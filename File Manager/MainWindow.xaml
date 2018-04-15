@@ -31,6 +31,7 @@
         <CommandBinding x:Name="FormatFolderCommand" Command="{StaticResource FormatFolderCommand}" Executed="FormatFolderCommand_Executed" ></CommandBinding>
         <CommandBinding x:Name="FormatAllCommand" Command="{StaticResource FormatAllCommand}" Executed="FormatAllCommand_Executed" ></CommandBinding>
         <CommandBinding x:Name="RecursiveModifyCommand" Command="{StaticResource RecursiveModifyCommand}" Executed="RecursiveModifyCommand_Executed" ></CommandBinding>
+        <CommandBinding x:Name="RecursiveDeleteCommand" Command="{StaticResource RecursiveDeleteCommand}" Executed="RecursiveDeleteCommand_Executed" ></CommandBinding>
         <CommandBinding x:Name="RefreshCommand" Command="{StaticResource RefreshCommand}" Executed="RefreshCommand_Executed" ></CommandBinding>
     </r:RibbonWindow.CommandBindings>
     <Grid Name="MainLayout" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window, AncestorLevel=1}}">
@@ -175,6 +176,7 @@
                         </r:RibbonSplitButton.Items>
                     </r:RibbonSplitButton>
                     <r:RibbonButton Label="Recursive Modify" Command="{StaticResource RecursiveModifyCommand}" LargeImageSource="/File Manager;component/images/Recursive.png" SmallImageSource="/File Manager;component/images/Recursive_16x16.png" ToolTipTitle="Recursive Modify" />
+                    <r:RibbonButton Label="Recursive Delete" Command="{StaticResource RecursiveDeleteCommand}" LargeImageSource="/File Manager;component/images/Delete.png" SmallImageSource="/File Manager;component/images/Delete_16x16.png" ToolTipTitle="Recursive Modify" />
                 </r:RibbonGroup>
             </r:RibbonTab>
         </r:Ribbon>

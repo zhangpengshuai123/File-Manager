@@ -704,8 +704,39 @@ namespace File_Manager
             }
         }
 
+        private void RecursiveDeleteCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            List<SysSorter> condition = BuildCondition();
+            DirectoryInfo curDir = new DirectoryInfo(PathBox.Text);
+
+            foreach (var curItem in curDir.GetDirectories())
+            {
+                List<SysFileIf> sortList = SelectFilesInFolder(curItem, condition);
+                if (sortList.Count == 0)
+                {
+                    continue;
+                }
+                DeletePngInFolder(sortList);
+            }
+        }
+
+        private void DeletePngInFolder(List<SysFileIf> renameList)
+        {
+            foreach (SysFileIf curFile in renameList)
+            {
+                if(curFile.GetType() != typeof(SysFile))
+                {
+                    continue;
+                }
+                if((curFile as SysFile).Extension.ToLower() != ".png")
+                {
+                    continue;
+                }
+                File.Delete(curFile.FullPath);
+            }
+        }
+
         #endregion
 
-        
     }
 }
