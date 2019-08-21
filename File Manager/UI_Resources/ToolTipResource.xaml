@@ -15,4 +15,5 @@
     <sys:String x:Key="RenameFolderTip">Rename all folders.</sys:String>
     <sys:String x:Key="RenameAllTip">Rename files and folders.</sys:String>
     <sys:String x:Key="PreviewTip">Preview the format of rename.</sys:String>
+    <sys:String x:Key="BatchGenerateTip">Batch Generate String.</sys:String>
 </ResourceDictionary>

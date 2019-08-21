@@ -33,6 +33,7 @@
         <CommandBinding x:Name="RecursiveModifyCommand" Command="{StaticResource RecursiveModifyCommand}" Executed="RecursiveModifyCommand_Executed" ></CommandBinding>
         <CommandBinding x:Name="RecursiveDeleteCommand" Command="{StaticResource RecursiveDeleteCommand}" Executed="RecursiveDeleteCommand_Executed" ></CommandBinding>
         <CommandBinding x:Name="RefreshCommand" Command="{StaticResource RefreshCommand}" Executed="RefreshCommand_Executed" ></CommandBinding>
+        <CommandBinding x:Name="BatchGenerateCommand" Command="{StaticResource BatchGenerateCommand}" Executed="BatchGenerateCommand_Executed" ></CommandBinding>
     </r:RibbonWindow.CommandBindings>
     <Grid Name="MainLayout" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window, AncestorLevel=1}}">
         <Grid.Resources>
@@ -176,7 +177,8 @@
                         </r:RibbonSplitButton.Items>
                     </r:RibbonSplitButton>
                     <r:RibbonButton Label="Recursive Modify" Command="{StaticResource RecursiveModifyCommand}" LargeImageSource="/File Manager;component/images/Recursive.png" SmallImageSource="/File Manager;component/images/Recursive_16x16.png" ToolTipTitle="Recursive Modify" />
-                    <r:RibbonButton Label="Recursive Delete" Command="{StaticResource RecursiveDeleteCommand}" LargeImageSource="/File Manager;component/images/Delete.png" SmallImageSource="/File Manager;component/images/Delete_16x16.png" ToolTipTitle="Recursive Modify" />
+                    <r:RibbonButton Label="Recursive Delete" Command="{StaticResource RecursiveDeleteCommand}" LargeImageSource="/File Manager;component/images/Delete.png" SmallImageSource="/File Manager;component/images/Delete_16x16.png" ToolTipTitle="Recursive Delete" />
+                    <r:RibbonButton Label="Batch Generate" Command="{StaticResource BatchGenerateCommand}" LargeImageSource="/File Manager;component/images/Copy.png" SmallImageSource="/File Manager;component/images/Copy_16x16.png" ToolTipTitle="Batch Generate" />
                 </r:RibbonGroup>
             </r:RibbonTab>
         </r:Ribbon>

@@ -63,7 +63,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BatchGenerateWindow.xaml.cs">
+      <DependentUpon>BatchGenerateWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\SysFileIf.cs" />
+    <Page Include="BatchGenerateWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -170,6 +177,10 @@
   <ItemGroup>
     <Resource Include="images\Delete.png" />
     <Resource Include="images\Delete_16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Copy.png" />
+    <Resource Include="images\Copy_16x16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

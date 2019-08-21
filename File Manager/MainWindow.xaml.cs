@@ -736,7 +736,13 @@ namespace File_Manager
             }
         }
 
+        private void BatchGenerateCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            BatchGenerateWindow batchGenerate = new BatchGenerateWindow();
+            batchGenerate.ShowDialog();
+        }
         #endregion
+
 
     }
 }
